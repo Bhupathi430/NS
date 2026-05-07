@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexure Studio | Professional Web Design</title>
+    <style>
+        /* --- CSS VARIABLES (iOS/Gemini Light Theme) --- */
+        :root {
+            --bg-color: #F2F2F7; /* iOS System Gray 6 */
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.9);
+            --text-main: #1C1C1E; /* iOS Label Color */
+            --text-muted: #8E8E93; /* iOS Secondary Label */
+            --primary: #007AFF; /* iOS Blue */
+            --accent: #5AC8FA;
+            --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.05);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* --- UTILITIES --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-padding {
+            padding: 100px 0;
+        }
+
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            margin-left: 15px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 122, 255, 0.1);
+        }
+
+        /* --- HEADER & NAV --- */
+        header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            border-radius: 20px;
+            z-index: 1000;
+            padding: 10px 30px;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 15px;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 6px; 
+        }
+
+        .brand-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        /* --- HERO SECTION --- */
+        #hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px;
+            overflow: hidden;
+            background: #fff; /* Fallback background */
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10; /* Ensure content is above canvas */
+            max-width: 900px;
+            padding: 0 20px;
+            pointer-events: none; /* Let clicks pass through empty space */
+        }
+
+        .hero-content * {
+            pointer-events: auto; /* Re-enable clicks on buttons/text */
+        }
+
+        /* Apple Startup Animation for Text */
+        .hero-title {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -2px;
+            color: var(--text-main);
+            
+            /* 4 Seconds Animation */
+            opacity: 0; 
+            animation: appleBoot 4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 1s ease forwards 0.5s;
+        }
+
+        .cta-group {
+            opacity: 0;
+            animation: fadeUp 1s ease forwards 1s;
+        }
+
+        /* --- SECTIONS GLASS CARDS --- */
+        #about, #pricing, #contact {
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-img-wrapper {
+            border-radius: 24px;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .about-img-wrapper img {
+            max-width: 100%;
+            height: auto;
+            transition: transform 0.5s;
+        }
+
+        .ceo-card {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(0, 122, 255, 0.05);
+            border-left: 4px solid var(--primary);
+            border-radius: 16px;
+        }
+
+        .ceo-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* --- PRICING SECTION --- */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .price-card {
+            padding: 40px 30px;
+            border-radius: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #fff; /* Solid background for cards */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+        }
+
+        .price-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+
+        .price-card.featured {
+            background: #fff;
+            border: 1px solid var(--primary);
+            box-shadow: 0 8px 30px rgba(0, 122, 255, 0.15);
+        }
+
+        .price-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 20px 0;
+            color: var(--text-main);
+        }
+
+        .price-amount span {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .features-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .features-list li::before {
+            content: '✓';
+            color: var(--primary);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        /* --- CONTACT SECTION --- */
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: space-between;
+        }
+
+        .contact-info {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.8);
+            padding: 20px;
+            border-radius: 16px;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .contact-item:hover {
+            background: #fff;
+            transform: translateX(5px);
+        }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .contact-form-wrapper {
+            flex: 1;
+            min-width: 300px;
+            padding: 40px;
+            border-radius: 24px;
+            background: #fff;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: #F2F2F7;
+            border: 1px solid #e1e1e6;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            font-family: var(--font-main);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        label {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: 0.3s;
+            background: transparent;
+            padding: 0 5px;
+        }
+
+        .form-control:focus ~ label,
+        .form-control:not(:placeholder-shown) ~ label {
+            top: -10px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            left: 10px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            padding: 60px 0 30px;
+            text-align: center;
+            margin-top: 50px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            background: #fff;
+        }
+
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+
+        .footer-copyright {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 20px;
+        }
+
+        /* --- TOAST NOTIFICATION --- */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-main);
+            padding: 15px 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,0,0,0.05);
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes appleBoot {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+                filter: blur(10px);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1.05);
+                filter: blur(0);
+            }
+            60% {
+                transform: scale(1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal-on-scroll.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            header {
+                width: 95%;
+                padding: 10px 20px;
+            }
+            .nav-links {
+                display: none;
+            }
+            .hamburger {
+                display: block;
+            }
+            .hero-title {
+                font-size: 3rem;
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navigation (Glassmorphism) -->
+    <header class="glass">
+        <div class="container">
+            <nav>
+                <a href="#hero" class="brand-container">
+                    <!-- Logo Image -->
+                    <img src="https://z-cdn-media.chatglm.cn/files/42364b96-f704-4c86-9d96-14ee5f5f1947.png?auth_key=1878146328-3c18d4bed6464339ae82e6a9b05bd31f-0-7bf6882fb0f926664153fe1f4b04893e" alt="Nexure Studio Logo" class="logo-img">
+                    <!-- Text Beside Logo -->
+                    <span class="brand-text">NEXURE STUDIO</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <div>☰</div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <canvas id="hero-canvas"></canvas>
+        <div class="container hero-content">
+            <!-- Greeting Removed -->
+            
+            <!-- Apple Startup Animation Text (4 Seconds) -->
+            <h1 class="hero-title">NEXURE STUDIO</h1>
+            
+            <p class="hero-subtitle">Elegant web design for the modern digital age.</p>
+            <div class="cta-group">
+                <a href="#contact" class="btn btn-primary">Get Started</a>
+                <a href="#pricing" class="btn btn-outline">View Pricing</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-padding">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text reveal-on-scroll">
+                    <h2 class="section-title">Who We Are</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Nexure Studio is a premier web development agency focused on delivering top-tier digital solutions. We believe that a website is more than just code; it's the digital face of your brand.</p>
+                    
+                    <div class="ceo-card glass">
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Founder & CEO</p>
+                        <div class="ceo-name">Bhupathi Vardhinedi</div>
+                    </div>
+                </div>
+                <div class="about-img-wrapper glass reveal-on-scroll">
+                    <!-- Logo Displayed Here -->
+                    <img src="https://z-cdn-media.chatglm.cn/files/42364b96-f704-4c86-9d96-14ee5f5f1947.png?auth_key=1878146328-3c18d4bed6464339ae82e6a9b05bd31f-0-7bf6882fb0f926664153fe1f4b04893e" alt="Nexure Studio Logo" style="width: 200px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section-padding">
+        <div class="container">
+            <div style="text-align: center;" class="reveal-on-scroll">
+                <h2 class="section-title">Our Pricing Plans</h2>
+                <p style="color: var(--text-muted);">Transparent pricing for your success.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <!-- Basic Plan -->
+                <div class="price-card reveal-on-scroll" style="transition-delay: 0.1s;">
+                    <h3>Starter</h3>
+                    <div class="price-amount">₹4,000<span>/project</span></div>
+                    <p style="color:var(--text-muted); margin-bottom: 20px;">Perfect for personal portfolios.</p>
+                    <ul class="features-list">
+                        <li>4 Pages</li>
+                        <li>Responsive Design</li>
+                        <li>Contact Form</li>
+                        <li>Basic SEO</li>
+                        <li>1 Week Support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-outline" style="margin:0;">Choose Plan</a>
+                </div>
+
+                <!-- Standard Plan -->
+                <div class="price-card featured reveal-on-scroll" style="transition-delay: 0.2s;">
+                    <h3>Business</h3>
+                    <div class="price-amount">₹12,000<span>/project</span></div>
+                    <p style="color:var(--text-muted); margin-bottom: 20px;">Ideal for small businesses.</p>
+                    <ul class="features-list">
+                        <li>5 Pages</li>
+                        <li>Modern Animations</li>
+                        <li>CMS Integration</li>
+                        <li>Social Media Integration</li>
+                        <li>1 Month Support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary" style="margin:0;">Choose Plan</a>
+                </div>
+
+                <!-- Premium Plan -->
+                <div class="price-card reveal-on-scroll" style="transition-delay: 0.3s;">
+                    <h3>Enterprise</h3>
+                    <div class="price-amount">₹20,000<span>/project</span></div>
+                    <p style="color:var(--text-muted); margin-bottom: 20px;">Advanced features for growth.</p>
+                    <ul class="features-list">
+                        <li>6 Pages</li>
+                        <li>E-commerce Ready</li>
+                        <li>Custom Interactive Elements</li>
+                        <li>Advanced SEO & Analytics</li>
+                        <li>3 Months Support</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-outline" style="margin:0;">Choose Plan</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section-padding">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 50px;" class="reveal-on-scroll">Get In Touch</h2>
+            
+            <div class="contact-container reveal-on-scroll">
+                <div class="contact-info">
+                    <div class="contact-item glass">
+                        <div class="icon-box">📧</div>
+                        <div>
+                            <h4>Email Us</h4>
+                            <p style="color: var(--text-muted);">bhupathinaidu0987@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item glass">
+                        <div class="icon-box">📞</div>
+                        <div>
+                            <h4>Call Us</h4>
+                            <p style="color: var(--text-muted);">+91 8309715229</p>
+                        </div>
+                    </div>
+                    <div class="contact-item glass">
+                        <div class="icon-box">📍</div>
+                        <div>
+                            <h4>Location</h4>
+                            <p style="color: var(--text-muted);">Andhra Pradesh, India</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper glass">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <input type="text" id="name" class="form-control" placeholder=" " required>
+                            <label for="name">Your Name</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="email" class="form-control" placeholder=" " required>
+                            <label for="email">Your Email</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" id="phone" class="form-control" placeholder=" " required>
+                            <label for="phone">Phone Number</label>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="message" class="form-control" rows="4" placeholder=" " required></textarea>
+                            <label for="message">Project Details</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">NEXURE STUDIO</div>
+            <p style="color: var(--text-muted);">Crafting digital experiences.</p>
+            
+            <p class="footer-copyright">&copy; 2026 Nexure Studio. All Rights Reserved. Founder: Bhupathi Vardhinedi.</p>
+            
+            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--text-muted);">
+                Thank You Visiting Our Page By <span style="color: var(--primary); font-weight: bold;">Bhupathi Naidu</span> - CEO
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Toast -->
+    <div class="toast" id="toast">
+        <span style="font-size: 1.5rem;">✨</span>
+        <div>
+            <h4 style="margin-bottom: 2px; font-weight: 600;">Message Sent!</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">We will contact you shortly.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. HERO CANVAS ANIMATION (Light Theme Particles) ---
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 3 + 1;
+                this.color = `rgba(0, 122, 255, ${Math.random() * 0.15})`; 
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(width * 0.08, 80); 
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 122, 255, ${0.08 * (1 - distance / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            resize();
+            initParticles();
+        });
+
+        resize();
+        initParticles();
+        animate();
+
+        // --- 2. SCROLL REVEAL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+            observer.observe(el);
+        });
+
+        // --- 3. FORM HANDLING ---
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+            e.target.reset();
+        });
+
+    </script>
+</body>
+</html>
